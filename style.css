@@ -12,7 +12,7 @@ h1 {
 svg {
     border: 1px solid black;
 }
-
+/*Above change arbitarily, below do not change*/
 #tooltip {
     border: 1px solid black;
     padding: 5px;
@@ -27,4 +27,9 @@ svg {
 .line {
     fill: none;
     stroke-width: 3px;
+}
+
+#detailed {
+    visibility: hidden;
+    /*display: none;*/
 }
