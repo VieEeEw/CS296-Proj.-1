@@ -2,24 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Demo</title>
+    <title>DO NOT CLICK LAS</title>
+
 </head>
 <body>
-<h1>This is a title</h1>
+<h1 id="title">The Changing Nature of Enrollment</h1>
+<h2 id="subtitle">Analyzing 40 years of registration data from UIUC</h2>
+<p id="credits">By Abdullah Dean, Ajay Tatachar, David Mitchell, Phillip Liu, Fan Huang</p>
+
 <div class="mainView">
     <div id="overview">
         <h2>Overview</h2>
         <svg id="Left"></svg>
         <div id="tooltip">Tips</div>
+        <!--<div class="x-label">Year</div>-->
+        <!--<div class="y-label">Number of Students Enrolled</div>-->
     </div>
-    <div id="detailed">
-        <h2>Detailed</h2>
-        <svg id="Right">
 
-        </svg>
+    <div id="detailed">
+        <h2 id="college-name">Detailed</h2>
+        <div id="svg-container"></div>
     </div>
 </div>
+<div id="instructions">
+    <b>Mouse over:</b> See information about graph <br/>
+    <b>Click and drag:</b> Zoom in <br/>
+    <b>Double click:</b> Zoom out <br/>
+    <b>Click on line:</b> See a slope graph depicting the size of each major relative to the college
+</div>
 </body>
+<!--<hr> &lt;!&ndash; This adds the horizontal dotted lines in the middle of the page after the visualization &ndash;&gt;-->
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="visual.js"></script>

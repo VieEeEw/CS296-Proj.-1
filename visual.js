@@ -1,4 +1,15 @@
 function showData(data) {
+    overview.append('text')
+        .attr('transform', `translate(${width/ 2},${config.height + config.margin.top + config.margin.bot})`)
+        .style("text-anchor", "middle")
+        .text('Year');
+    overview.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -config.height / 2)
+        .attr('y', 5)
+        .attr('dy', '1em')
+        .style("text-anchor", "middle")
+        .text('Number of Students Enrolled');
     let helperLineVertical = overview.append('g')
         .attr('transform', `translate(${config.margin.left},0)`)
         .append('line')
@@ -26,7 +37,7 @@ function showData(data) {
     let originY = yScale.copy();
     let xAx = d3.axisBottom(xScale)
         .tickFormat(d3.format('Y'))
-        .ticks(39);
+        .ticks(19);
     let yAx = d3.axisLeft(yScale);
     let xAxGroup = overview
         .append('g')
@@ -96,7 +107,7 @@ function showData(data) {
             .attr('d', line);
         yScale = originY.copy();
         newYScale = originY.copy();
-        })
+    })
         .on('mousemove', function () {
             let x = d3.mouse(this)[0];
             let y = d3.mouse(this)[1];
@@ -157,10 +168,10 @@ function showData(data) {
             .attr('class', 'line')
             .style('stroke', d => colorScale(college))
             .on('mouseover', function () {
-                this.style['stroke-width'] = '8px'
+                this.style['stroke-width'] = '4px'
             })
             .on('mouseout', function () {
-                this.style['stroke-width'] = '4px'
+                this.style['stroke-width'] = '2px'
             })
             .on('mouseenter', function (d) {
                 showTooltip(d[0]['College'], [d3.event.clientX, d3.event.clientY], this)
@@ -169,9 +180,13 @@ function showData(data) {
                 d3.select('#tooltip')
                     .style('display', 'none')
             })
-            .on('click', showDetailed)
+            .on('click', () => {
+                showDetailed(college);
+            })
             .on('blur', () => {
-                d3.select('#detailed').style('visibility', 'hidden')
+                d3.select('#svg-container')
+                    .style('visibility', 'hidden');
+                d3.select('#college-name').text("Detailed")
             });
     }
 
@@ -189,9 +204,10 @@ function showData(data) {
 
 }
 
-function showDetailed(data) {
-    console.log(data);
-    d3.select('#detailed').style('visibility', 'visible');
+function showDetailed(clg) {
+    d3.select('#college-name').text(`College of ${clg}`);
+    d3.select('#svg-container').style('visibility', 'visible');
+    window.drawSlopeGraph(clg);
 }
 
 
@@ -213,14 +229,14 @@ function loadData() {
 }
 
 
-let width = Math.floor(2 * window.innerWidth / 3) - 50;
+let width = Math.floor(window.innerWidth / 2) - 50;
 let height = window.innerHeight - 175;
 console.log(width);
 console.log(height);
 let margin = {
     top: 10,
-    bot: 30,
-    left: 40,
+    bot: 40,
+    left: 65,
     right: 15
 };
 let config = {
@@ -231,12 +247,236 @@ let config = {
 let overview = d3.select('#Left')
     .attr('width', width)
     .attr('height', height);
-let detailed = d3.select('#Right')
-    .attr('width', width / 2)
+let detailedWidth = width;
+let detailedHeight = height;
+d3.select('#detailed')
+    .attr('width', detailedWidth)
     .attr('height', height);
 let colorScale;
+
+
+
+// Slope credit to Ajay
+(function () {
+    let margin = {top: 50, right: 200, bottom: 40, left: 200};
+
+    d3.select('#svg-container').attr('width', detailedWidth)
+        .attr('height', detailedHeight);
+
+    let width = detailedWidth - margin.left - margin.right,
+        height = detailedHeight - margin.top - margin.bottom;
+
+    let config = {
+        xOffset: 0,
+        yOffset: 0,
+        width: width,
+        height: height,
+        labelPositioning: {
+            alpha: 1.0,
+            spacing: 18
+        },
+        leftTitle: "1980",
+        rightTitle: "2018",
+        labelGroupOffset: 5,
+        labelKeyOffset: 50,
+        radius: 6,
+        unfocusOpacity: 0.2
+    }
+
+    window.drawSlopeGraph = (college) => {
+        let url = 'data_by_college.json';
+
+        d3.select('#slopegraph-svg').remove()
+
+        let svg = d3
+            .select("#svg-container")
+            .append('svg')
+            .attr('id', 'slopegraph-svg')
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+        let y1 = d3.scaleLinear()
+            .range([height, 0]);
+
+        d3.json(url).then((data) => {
+            data = data[college]
+
+            console.log(data);
+
+            // Combine totals into a single array
+            let totals = [];
+            for (let key in data['1980'][0]) {
+                let total = data['1980'][0][key].Total
+                let obj = {
+                    'Major Name': key,
+                    year: '1980',
+                    Total: Math.trunc((total / data['1980'][1]) * 1000) / 10
+                }
+                totals.push(obj)
+            }
+            for (let key in data['2018'][0]) {
+                let total = data['2018'][0][key].Total
+                let obj = {
+                    'Major Name': key,
+                    year: '2018',
+                    Total: Math.trunc((total / data['2018'][1]) * 1000) / 10
+                }
+                totals.push(obj)
+            }
+
+            // for debugging
+            window.totals = totals
+
+            // Nest by major name
+            totals = d3.nest()
+                .key(function (d) {
+                    return d['Major Name']
+                })
+                .entries(totals);
+            totals = totals.filter(function (d) {
+                return d.values.length > 1;
+            });
+
+            // find min and max based on totals
+            let y1Min = d3.min(totals, function (d) {
+                return Math.min(d.values[0].Total, d.values[1].Total)
+            });
+            let y1Max = d3.max(totals, function (d) {
+                return Math.max(d.values[0].Total, d.values[1].Total)
+            });
+
+            // Calculate y domain for totals
+            y1.domain([y1Min, y1Max]);
+
+            let yScale = y1;
+
+            let voronoi = d3.voronoi()
+                .x(d => d.year == "1980" ? 0 : width)
+                .y(d => yScale(d.Total))
+                .extent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+
+            let borderLines = svg.append("g")
+                .attr("class", "border-lines")
+            borderLines.append("line")
+                .attr("x1", 0).attr("y1", 0)
+                .attr("x2", 0).attr("y2", config.height);
+            borderLines.append("line")
+                .attr("x1", width).attr("y1", 0)
+                .attr("x2", width).attr("y2", config.height);
+
+            let slopeGroups = svg.append("g")
+                .selectAll("g")
+                .data(totals)
+                .enter().append("g")
+                .attr("class", "slope-group")
+                .attr("id", function (d, i) {
+                    d.id = "group" + i;
+                    d.values[0].group = this;
+                    d.values[1].group = this;
+                });
+
+            let slopeLines = slopeGroups.append("line")
+                .attr("class", "slope-line")
+                .attr("x1", 0)
+                .attr("y1", function (d) {
+                    return y1(d.values[0].Total);
+                })
+                .attr("x2", config.width)
+                .attr("y2", function (d) {
+                    return y1(d.values[1].Total);
+                });
+
+            let leftSlopeCircle = slopeGroups.append("circle")
+                .attr("r", config.radius)
+                .attr("cy", d => y1(d.values[0].Total));
+
+            let leftSlopeLabels = slopeGroups.append("g")
+                .attr("class", "slope-label-left")
+                .each(function (d) {
+                    d.xLeftPosition = -config.labelGroupOffset;
+                    d.yLeftPosition = y1(d.values[0].Total);
+                });
+
+            leftSlopeLabels.append("text")
+                .attr("x", d => d.xLeftPosition)
+                .attr("y", d => d.yLeftPosition)
+                .attr("dx", -10)
+                .attr("dy", 3)
+                .attr("text-anchor", "end")
+                .text(d => d.values[0].Total + '% ' + d.key);
+
+            let rightSlopeCircle = slopeGroups.append("circle")
+                .attr("r", config.radius)
+                .attr("cx", config.width)
+                .attr("cy", d => y1(d.values[1].Total));
+
+            let rightSlopeLabels = slopeGroups.append("g")
+                .attr("class", "slope-label-right")
+                .each(function (d) {
+                    d.xRightPosition = width + config.labelGroupOffset;
+                    d.yRightPosition = y1(d.values[1].Total);
+                });
+
+            rightSlopeLabels.append("text")
+                .attr("x", d => d.xRightPosition)
+                .attr("y", d => d.yRightPosition)
+                .attr("dx", 10)
+                .attr("dy", 3)
+                .attr("text-anchor", "start")
+                .text(d => d.values[1].Total + '% ' + d.key);
+
+            let titles = svg.append("g")
+                .attr("class", "slopegraph-title");
+
+            titles.append("text")
+                .attr("text-anchor", "end")
+                .attr("dx", -10)
+                .attr("dy", -margin.top / 2)
+                .text(config.leftTitle);
+
+            titles.append("text")
+                .attr("x", config.width)
+                .attr("dx", 10)
+                .attr("dy", -margin.top / 2)
+                .text(config.rightTitle);
+
+            // relax(leftSlopeLabels, "yLeftPosition");
+            leftSlopeLabels.selectAll("text")
+                .attr("y", d => d.yLeftPosition);
+
+            // relax(rightSlopeLabels, "yRightPosition");
+            rightSlopeLabels.selectAll("text")
+                .attr("y", d => d.yRightPosition);
+
+            d3.selectAll(".slope-group")
+                .attr("opacity", config.unfocusOpacity);
+
+            let voronoiGroup = svg.append("g")
+                .attr("class", "voronoi");
+
+            voronoiGroup.selectAll("path")
+                .data(voronoi.polygons(d3.merge(totals.map(d => d.values))))
+                .enter().append("path")
+                .attr("d", function (d) {
+                    return d ? "M" + d.join("L") + "Z" : null;
+                })
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout);
+        });
+    };
+
+    function mouseover(d) {
+        d3.select(d.data.group).attr("opacity", 1)
+    }
+
+    function mouseout(d) {
+        d3.selectAll(".slope-group")
+            .attr("opacity", config.unfocusOpacity);
+    }
+})();
 $(loadData().then(d => {
     console.log(d);
-
     showData(d);
 }));
