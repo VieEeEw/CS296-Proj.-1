@@ -60,7 +60,7 @@ function showData(data) {
                         .style('display', 'none')
                 })
                 .on('click', () => {
-                    showDetailed(college);
+                    showDetailed(college, data['Major'], detailConfig);
                 })
                 .on('blur', () => {
                     d3.select('#svg-container')
