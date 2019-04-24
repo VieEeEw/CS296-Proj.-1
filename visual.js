@@ -34,7 +34,9 @@ function showData(data) {
     }
 
     function showLineChart(data) {
-        function draw(number, college) {
+        function draw(datum, college) {
+            let number = datum['total'];
+
             let line = d3.line()
                 .x(d => xScale(d['Fall']))
                 .y(d => yScale(d['Total']));
@@ -60,7 +62,7 @@ function showData(data) {
                         .style('display', 'none')
                 })
                 .on('click', () => {
-                    showDetailed(college, data['Major'], detailConfig);
+                    showDetailed(college, datum['Major'], detailConfig);
                 })
                 .on('blur', () => {
                     d3.select('#svg-container')
@@ -70,7 +72,7 @@ function showData(data) {
         }
 
         for (let d of data) {
-            draw(d['total'], d['College']);
+            draw(d, d['College']);
         }
     }
 
@@ -192,7 +194,9 @@ function showData(data) {
 }
 
 function showDetailed(college, data, config) {
-
+    console.log(college);
+    console.log(data);
+    console.log(config);
 }
 
 let colorScale;  // A color scale for beautiful colors
