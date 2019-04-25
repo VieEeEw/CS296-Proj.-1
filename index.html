@@ -1,171 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <title>DO NOT CLICK LAS</title>
     <style>
 
-        body, html {
-            padding: 0;
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+      body, html {
+          padding: 0;
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+      }
 
-        body {
-            padding: 50px 10%;
-            background-color: #DAEAFA;
-        }
+      body {
+          padding: 50px 10%;
+          background-color: #DAEAFA;
+      }
 
-        /** heading **/
+      /** heading **/
 
-        #heading {
-            margin-bottom: 50px;
-        }
+      #heading {
+          margin-bottom: 50px;
+      }
 
-        #heading * {
-            text-align: center;
-        }
+      #heading * {
+          text-align: center;
+      }
 
-        #title {
-            font-size: 2em;
-            font-weight: bold;
-        }
+      #title {
+          font-size: 2em;
+          font-weight: bold;
+      }
 
-        #subtitle {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-        }
+      #subtitle {
+          font-size: 1.3em;
+          margin-bottom: 10px;
+      }
 
-        #credits-pref {
-        }
+      #credits-pref {
+      }
 
-        #credits {
-            font-size: 0.8em;
-        }
+      #credits {
+          font-size: 0.8em;
+      }
 
-        #credits a::after {
-            display: inline-block;
-            content: ", ";
-            text-decoration: none;
+      #credits a::after {
+          display: inline-block;
+          content: ", ";
+          text-decoration: none;
 
-            pointer-events: none;
-            cursor: default;
-        }
+          pointer-events: none;
+          cursor: default;
+      }
 
-        #credits a:last-of-type::after {
-            content: none;
-        }
+      #credits a:last-of-type::after {
+          content: none;
+      }
 
-        /** visualization blocks **/
+      /** visualization blocks **/
 
-        #ctnr {
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            justify-content: center;
-        }
+      #ctnr {
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          justify-content: center;
+      }
 
-        #ctnr div {
-            display: flex;
-            flex-direction: column;
-            padding: 5px;
-        }
+      #ctnr div {
+          display: flex;
+          flex-direction: column;
+          padding: 5px;
+      }
 
-        #colleges {
-            flex-grow: 1;
-        }
+      #colleges {
+          flex-grow: 1;
+      }
 
-        #majors {
-            flex-basis: 50%;
-        }
+      #majors {
+          flex-basis: 50%;
+      }
 
-        /** **/
+      /** **/
 
-        .ctnr-header {
-            font-size: 1.1em;
-            font-weight: bold;
-        }
+      .ctnr-header {
+          font-size: 1.1em;
+          font-weight: bold;
+      }
 
-        .visu {
-            flex-grow: 1;
-            min-height: 350px;
-            background-color: white;
-        }
+      .visu {
+          flex-grow: 1;
+          min-height: 350px;
+          background-color: white;
+      }
 
-        .ctnr-footer {
-            font-size: 0.8em;
-        }
+      .ctnr-footer {
+          font-size: 0.8em;
+      }
 
-        /** dynamics **/
+      /** dynamics **/
 
-        @media screen and (max-width: 800px) {
+      @media screen and (max-width: 800px) {
 
-            #ctnr {
-                flex-direction: column;
-            }
+          #ctnr {
+              flex-direction: column;
+          }
 
-            .visu {
-                flex-basis: 70vh;
-            }
+          .visu {
+              flex-basis: 70vh;
+          }
 
-            #colleges {
-                margin-bottom: 40px;
-            }
+          #colleges {
+              margin-bottom: 40px;
+          }
 
-            #colleges, #majors, .visu {
-                height: auto;
-                min-height: auto;
-            }
+          #colleges, #majors, .visu {
+              height: auto;
+              min-height: auto;
+          }
 
-            #colleges .ctnr-footer {
-                display: none;
-            }
-        }
+          #colleges .ctnr-footer {
+              display: none;
+          }
+      }
+
+      /* stream graph css */
+
+      #chart {
+          background: #fff;
+      }
+      
+      .tooltip {
+          font: 0.9em Arial;
+      }
+
+      .axis path, .axis line {
+          fill: none;
+          stroke: #000;
+          stroke-width: 2px;
+          shape-rendering: crispEdges;
+      }
+
+      button {
+          position: absolute;
+          right: 50px;
+          top: 10px;
+      }
     </style>
-</head>
-<body>
-
-<div id="heading">
-    <div id="title">The Changing Nature of Enrollment</div>
-    <div id="subtitle">Analyzing 40 years of class registration at UIUC</div>
-    <div id="credits-pref">
+  </head>
+  <body>
+    <div id="heading">
+      <div id="title">The Changing Nature of Enrollment</div>
+      <div id="subtitle">Analyzing 40 years of class registration at UIUC</div>
+      <div id="credits-pref">
         Part of <a href="https://cs.illinois.edu/courses/profile/CS296">CS 296: Data Structures Honors</a>, made by:
-    </div>
-    <div id="credits">
+      </div>
+      <div id="credits">
         <a href="mailto:yifeil6@illinois.edu">Phillip Liu</a>
         <a href="mailto:anoora4@illinois.edu">Abdullah Dean</a>
         <a href="mailto:ajaymt2@illinois.edu">Ajay Tatachar</a>
         <a href="https://astrosticks.com">David Mitchell</a>
-        <a href="mailto:fhuang5@illinois.edu">Fan Huang</a>
+        <a href="mailto:atharva2@illinois.edu">Atharva Sehgal</a>
+      </div>
     </div>
-</div>
 
-<div id="ctnr">
-    <div id="colleges">
+    <div id="ctnr">
+      <div id="colleges">
         <div class="ctnr-header">Colleges</div>
         <div class="visu">
-            <svg id="left"></svg>
-            <div id="tooltip">~Tips~</div>
+          <svg id="left"></svg>
+          <div id="tooltip">~Tips~</div>
         </div>
 
         <div class="ctnr-footer">
-            <span><b>Click:</b> Inspect college</span>
-            <span><b>Click + drag:</b> Zoom to selection</span>
-            <span><b>Double Click:</b> Zoom to default</span>
+          <span><b>Click:</b> Inspect college</span>
+          <span><b>Click + drag:</b> Zoom to selection</span>
+          <span><b>Double Click:</b> Zoom to default</span>
         </div>
-    </div>
-    <div id="majors">
+      </div>
+      <div id="majors">
         <div class="ctnr-header">Detailed Information</div>
-        <div class="visu">
-            <svg id="right"></svg>
+        <div class="visu" id="chart">
+        </div>
+        <div id="chart-tooltip">
         </div>
         <div class="ctnr-footer"></div>
+      </div>
     </div>
-</div>
 
-</body>
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="visual.js"></script>
-<link rel="stylesheet" href="style.css">
+  </body>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="d32.js"></script>
+  <script type="text/javascript" src="stream-graph.js"></script>
+  <script src="visual.js"></script>
+  <link rel="stylesheet" href="style.css">
 </html>
